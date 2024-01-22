@@ -1,60 +1,81 @@
-workflowsSpec: "1.0.0"
+workflowsSpec: 1.0.0
 info:
-  title: "Adyen Giving"
-  version: "v1"
-  description: "With Adyen Giving, you can give your shoppers the option to donate to a nonprofit as part of your payment flow."
+  title: Adyen Giving
+  version: v1
+  description: With Adyen Giving, you can give your shoppers the option to donate to a nonprofit as part of your payment flow.
 sourceDescriptions:
-  - name: "adyen-checkout-api"
-    url: "https://raw.githubusercontent.com/Adyen/adyen-openapi/main/yaml/CheckoutService-v71.yaml"
-    type: "openapi"
+  - name: adyen-checkout-api
+    url: https://raw.githubusercontent.com/Adyen/adyen-openapi/main/yaml/CheckoutService-v71.yaml
+    type: openapi
 workflows:
-  - workflowId: "giving"
-    summary: "Make a donation"
-    description: "This workflow shows how to perform a donation"
+  - workflowId: giving
+    summary: Make a donation
+    description: This workflow shows how to perform a donation
     inputs:
-      type: "object"
+      type: object
       properties:
         x-api-key:
-          type: "string"
+          type: string
+        merchantAccount:
+          type: string
         amount:
-          $ref: "#/components/amount"
+          $ref: #/components/amount
         card:
-          $ref: "#/components/card"
+          $ref: #/components/card
     steps:
-      - stepId: "payment"
-        description: "Make a card payment"
-        operationId: "payment"
+      - stepId: payment
+        description: Make a card payment
+        operationId: post-payments
         parameters:
-          - name: "x-api-key"
-            in: "header"
-            value: "$inputs.x-api-key"
-          - name: "number"
-            in: "body"
+          - name: x-api-key
+            in: header
+            value: $inputs.x-api-key
+          - name: marchantAccount
+            in: body
+            target: $request.body#/marchantAccount
+            value: $inputs.marchantAccount
+          - name: number
+            in: body
             target: $request.body#/number
             value: $inputs.card.number
-          - name: "cvc"
-            in: "body"
+          - name: cvc
+            in: body
             target: $request.body#/cvc
             value: $inputs.card.cvc
-          - name: "expiryMonth"
-            in: "body"
+          - name: expiryMonth
+            in: body
             target: $request.body#/expiryMonth
             value: $inputs.card.expiryMonth
-          - name: "expiryYear"
-            in: "body"
+          - name: expiryYear
+            in: body
             target: $request.body#/expiryYear
             value: $inputs.card.expiryYear
-          - name: "holderName"
-            in: "body"
+          - name: holderName
+            in: body
             target: $request.body#/holderName
             value: $inputs.card.holderName
         successCriteria:
-          - condition: "$statusCode == 200"
+          - condition: $statusCode == 200
+          - condition: $response.body.donationToken != null
         outputs:
-          tokenExpires: "$response.header.X-Expires-After"
-          rateLimit: "$response.header.X-Rate-Limit"
+          donationToken: $response.body.donationToken
+      - stepId: donation
+        description: Makes the donation
+        operationId: post-donations
+        parameters:
+          - name: x-api-key
+            in: header
+            value: $inputs.x-api-key
+          - name: number
+            in: body
+            target: $request.body#/number
+            value: $inputs.card.number
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          donationToken: $response.body.donationToken
     outputs:
-      tokenExpires: "$steps.loginStep.outputs.tokenExpires"
+      tokenExpires: $steps.loginStep.outputs.tokenExpires
 components:
   inputs:
     amount:
@@ -69,7 +90,7 @@ components:
       type: object
       properties:
         number:
-          description: "The card number (without any separators)"
+          description: The card number (without any separators)
           maxLength: 19
           minLength: 4
           type: string
