@@ -19,34 +19,34 @@ workflows:
         amount:
           $ref: "#/components/amount"
         card:
-          $ref: "#/components/card”
+          $ref: "#/components/card"
     steps:
-      - stepId: “payment”
-        description: “Make a card payment”
-        operationId: “payment”
+      - stepId: "payment"
+        description: "Make a card payment"
+        operationId: "payment"
         parameters:
           - name: "x-api-key"
-            in: “header”
+            in: "header"
             value: "$inputs.x-api-key"
-          - name: “number”
-            in: “body”
-		   target: $request.body#/number
+          - name: "number"
+            in: "body"
+            target: $request.body#/number
             value: $inputs.card.number
-          - name: “cvc”
-            in: “body”
-		   target: $request.body#/cvc
+          - name: "cvc"
+            in: "body"
+            target: $request.body#/cvc
             value: $inputs.card.cvc
-          - name: “expiryMonth”
-            in: “body”
-		   target: $request.body#/expiryMonth
+          - name: "expiryMonth"
+            in: "body"
+            target: $request.body#/expiryMonth
             value: $inputs.card.expiryMonth
-          - name: “expiryYear”
-            in: “body”
-		   target: $request.body#/expiryYear
+          - name: "expiryYear"
+            in: "body"
+            target: $request.body#/expiryYear
             value: $inputs.card.expiryYear
-          - name: “holderName”
-            in: “body”
-		   target: $request.body#/holderName
+          - name: "holderName"
+            in: "body"
+            target: $request.body#/holderName
             value: $inputs.card.holderName
         successCriteria:
           - condition: "$statusCode == 200"
@@ -61,7 +61,7 @@ components:
       type: object
       properties:
         value:
-		format: int64
+          format: int64
           type: integer
         currency:
           type: string
@@ -69,16 +69,15 @@ components:
       type: object
       properties:
         number:
-          description: “The card number (without any separators)”
+          description: "The card number (without any separators)"
           maxLength: 19
           minLength: 4
           type: string
         cvc:
-		format: int64
+          format: int64
           type: integer
           maxLength: 20
           minLength: 1
-          type: string
         expiryMonth:
           maxLength: 2
           minLength: 1
