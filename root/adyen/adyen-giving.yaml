@@ -19,9 +19,9 @@ workflows:
         merchantAccount:
           type: string
         amount:
-          $ref: #/components/amount
+          $ref: '#/components/amount'
         card:
-          $ref: #/components/card
+          $ref: '#/components/card'
     steps:
       - stepId: payment
         description: Make a card payment
@@ -59,6 +59,7 @@ workflows:
           - condition: $response.body.donationToken != null
         outputs:
           donationToken: $response.body.donationToken
+          pspReference: $response.body.pspReference
       - stepId: donation
         description: Makes the donation
         operationId: post-donations
@@ -66,16 +67,24 @@ workflows:
           - name: x-api-key
             in: header
             value: $inputs.x-api-key
-          - name: number
+          - name: marchantAccount
             in: body
-            target: $request.body#/number
-            value: $inputs.card.number
+            target: $request.body#/marchantAccount
+            value: $inputs.marchantAccount
+          - name: donationToken
+            in: body
+            target: $request.body#/donationToken
+            value: $steps.donation.outputs.donationToken
+          - name: donationOriginalPspReference
+            in: body
+            target: $request.body#/donationOriginalPspReference
+            value: $steps.donation.outputs.pspReference
         successCriteria:
           - condition: $statusCode == 200
         outputs:
           donationToken: $response.body.donationToken
     outputs:
-      tokenExpires: $steps.loginStep.outputs.tokenExpires
+      tokenExpires: $steps.donation.outputs.tokenExpires
 components:
   inputs:
     amount:
