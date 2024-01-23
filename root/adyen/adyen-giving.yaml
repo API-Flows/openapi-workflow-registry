@@ -38,11 +38,11 @@ workflows:
             in: body
             target: $request.body#/marchantAccount
             value: $inputs.marchantAccount
-          - name: amountValue
+          - name: amount
             in: body
             target: $request.body#/amount.value
             value: $inputs.amount.value
-          - name: amountCurrency
+          - name: currency
             in: body
             target: $request.body#/amount.currency
             value: $inputs.amount.currency
@@ -53,11 +53,11 @@ workflows:
             in: body
             target: $request.body#/paymentMethod.type
             value: scheme
-          - name: number
+          - name: cardnumber
             in: body
             target: $request.body#/paymentMethod.number
             value: $inputs.card.number
-          - name: cvc
+          - name: CVC
             in: body
             target: $request.body#/paymentMethod.cvc
             value: $inputs.card.cvc
@@ -94,11 +94,11 @@ workflows:
             in: body
             target: $request.body#/marchantAccount
             value: $inputs.marchantAccount
-          - name: donationValue
+          - name: amount
             in: body
             target: $request.body#/amount.value
             value: $inputs.donation.value
-          - name: donationCurrency
+          - name: currency
             in: body
             target: $request.body#/amount.currency
             value: $inputs.donation.currency
