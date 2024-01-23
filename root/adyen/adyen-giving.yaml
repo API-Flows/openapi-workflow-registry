@@ -18,6 +18,8 @@ workflows:
           type: string
         merchantAccount:
           type: string
+        reference:
+          type: string
         amount:
           $ref: '#/components/amount'
         card:
@@ -34,26 +36,45 @@ workflows:
             in: body
             target: $request.body#/marchantAccount
             value: $inputs.marchantAccount
+          - name: amountValue
+            in: body
+            target: $request.body#/amount.value
+            value: $inputs.amount.value
+          - name: amountCurrency
+            in: body
+            target: $request.body#/amount.currency
+            value: $inputs.amount.currency
+          - name: reference
+            in: body
+            value: $inputs.reference
+          - name: type
+            in: body
+            target: $request.body#/paymentMethod.type
+            value: scheme
           - name: number
             in: body
-            target: $request.body#/number
+            target: $request.body#/paymentMethod.number
             value: $inputs.card.number
           - name: cvc
             in: body
-            target: $request.body#/cvc
+            target: $request.body#/paymentMethod.cvc
             value: $inputs.card.cvc
           - name: expiryMonth
             in: body
-            target: $request.body#/expiryMonth
+            target: $request.body#/paymentMethod.expiryMonth
             value: $inputs.card.expiryMonth
           - name: expiryYear
             in: body
-            target: $request.body#/expiryYear
+            target: $request.body#/paymentMethod.expiryYear
             value: $inputs.card.expiryYear
           - name: holderName
             in: body
-            target: $request.body#/holderName
+            target: $request.body#/paymentMethod.holderName
             value: $inputs.card.holderName
+          - name: returnUrl
+            in: body
+            target: $request.body#/returnUrl
+            value: https://your-company.com/...
         successCriteria:
           - condition: $statusCode == 200
           - condition: $response.body.donationToken != null
@@ -93,8 +114,20 @@ components:
         value:
           format: int64
           type: integer
+          default: 2000
         currency:
           type: string
+          default: EUR
+    donation:
+      type: object
+      properties:
+        value:
+          format: int64
+          type: integer
+          default: 200
+        currency:
+          type: string
+          default: EUR
     card:
       type: object
       properties:
