@@ -22,6 +22,8 @@ workflows:
           type: string
         amount:
           $ref: '#/components/amount'
+        donationAmount:
+          $ref: '#/components/amount'
         card:
           $ref: '#/components/card'
     steps:
@@ -32,7 +34,7 @@ workflows:
           - name: x-api-key
             in: header
             value: $inputs.x-api-key
-          - name: marchantAccount
+          - name: merchantAccount
             in: body
             target: $request.body#/marchantAccount
             value: $inputs.marchantAccount
@@ -47,7 +49,7 @@ workflows:
           - name: reference
             in: body
             value: $inputs.reference
-          - name: type
+          - name: paymentMethod
             in: body
             target: $request.body#/paymentMethod.type
             value: scheme
@@ -88,10 +90,18 @@ workflows:
           - name: x-api-key
             in: header
             value: $inputs.x-api-key
-          - name: marchantAccount
+          - name: merchantAccount
             in: body
             target: $request.body#/marchantAccount
             value: $inputs.marchantAccount
+          - name: donationValue
+            in: body
+            target: $request.body#/amount.value
+            value: $inputs.donation.value
+          - name: donationCurrency
+            in: body
+            target: $request.body#/amount.currency
+            value: $inputs.donation.currency
           - name: donationToken
             in: body
             target: $request.body#/donationToken
@@ -100,6 +110,22 @@ workflows:
             in: body
             target: $request.body#/donationOriginalPspReference
             value: $steps.donation.outputs.pspReference
+          - name: merchantAccount
+            in: body
+            target: $request.body#/marchantAccount
+            value: $inputs.marchantAccount
+          - name: donationAccount
+            in: body
+            target: $request.body#/donationAccount
+            value: $inputs.donationAccount
+          - name: paymentMethod
+            in: body
+            target: $request.body#/paymentMethod.type
+            value: scheme
+          - name: returnUrl
+            in: body
+            target: $request.body#/returnUrl
+            value: https://your-company.com/...
         successCriteria:
           - condition: $statusCode == 200
         outputs:
