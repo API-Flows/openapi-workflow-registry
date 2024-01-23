@@ -23,7 +23,7 @@ workflows:
         card:
           $ref: '#/components/card'
     steps:
-      - stepId: payment
+      - stepId: make-payment
         description: Make a card payment
         operationId: post-payments
         parameters:
@@ -60,7 +60,7 @@ workflows:
         outputs:
           donationToken: $response.body.donationToken
           pspReference: $response.body.pspReference
-      - stepId: donation
+      - stepId: add-donation
         description: Makes the donation
         operationId: post-donations
         parameters:
