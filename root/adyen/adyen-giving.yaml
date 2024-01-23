@@ -36,8 +36,8 @@ workflows:
             value: $inputs.x-api-key
           - name: merchantAccount
             in: body
-            target: $request.body#/marchantAccount
-            value: $inputs.marchantAccount
+            target: $request.body#/merchantAccount
+            value: $inputs.merchantAccount
           - name: amount
             in: body
             target: $request.body#/amount.value
@@ -48,6 +48,7 @@ workflows:
             value: $inputs.amount.currency
           - name: reference
             in: body
+            target: $request.body#/reference
             value: $inputs.reference
           - name: paymentMethod
             in: body
@@ -92,8 +93,12 @@ workflows:
             value: $inputs.x-api-key
           - name: merchantAccount
             in: body
-            target: $request.body#/marchantAccount
-            value: $inputs.marchantAccount
+            target: $request.body#/merchantAccount
+            value: $inputs.merchantAccount
+          - name: reference
+            in: body
+            target: $request.body#/reference
+            value: $inputs.reference
           - name: amount
             in: body
             target: $request.body#/amount.value
@@ -105,15 +110,15 @@ workflows:
           - name: donationToken
             in: body
             target: $request.body#/donationToken
-            value: $steps.donation.outputs.donationToken
+            value: $steps.make-payment.outputs.donationToken
           - name: donationOriginalPspReference
             in: body
             target: $request.body#/donationOriginalPspReference
-            value: $steps.donation.outputs.pspReference
+            value: $steps.make-payment.outputs.pspReference
           - name: merchantAccount
             in: body
-            target: $request.body#/marchantAccount
-            value: $inputs.marchantAccount
+            target: $request.body#/merchantAccount
+            value: $inputs.merchantAccount
           - name: donationAccount
             in: body
             target: $request.body#/donationAccount
@@ -129,9 +134,9 @@ workflows:
         successCriteria:
           - condition: $statusCode == 200
         outputs:
-          donationToken: $response.body.donationToken
+          pspReference: $response.body.pspReference
     outputs:
-      tokenExpires: $steps.donation.outputs.tokenExpires
+      pspReference: $steps.add-donation.outputs.pspReference
 components:
   inputs:
     amount:
