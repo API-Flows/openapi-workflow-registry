@@ -170,7 +170,7 @@ workflows:
         card:
           $ref: '#/components/card'
     steps:
-      - stepId: create-token
+      - stepId: create-network-token
         description: Make a card payment
         operationId: post-payments
         parameters:
@@ -245,8 +245,8 @@ workflows:
           - condition: $response.body.additionalData.recurring.shopperReference == $inputs.shopperReference
         outputs:
           token: $response.body.additionalData.recurring.recurringDetailReference
-      - stepId: make-payment-with-token
-        description: Makes the payment using the token
+      - stepId: pay-with-network-token
+        description: Makes the payment using the network token
         operationId: post-payments
         parameters:
           - name: x-api-key
@@ -275,7 +275,7 @@ workflows:
           - name: storedPaymentMethodId
             in: body
             target: $request.body#/paymentMethod.storedPaymentMethodId
-            value: $steps.create-token.outputs.token
+            value: $steps.create-network-token.outputs.token
           - name: recurringProcessingModel
             in: body
             target: $request.body#/recurringProcessingModel
@@ -293,7 +293,7 @@ workflows:
         outputs:
           pspReference: $response.body.pspReference
     outputs:
-      pspReference: $steps.make-payment-with-token.outputs.pspReference
+      pspReference: $steps.pay-with-network-token.outputs.pspReference
 components:
   inputs:
     amount:
