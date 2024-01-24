@@ -1,0 +1,206 @@
+workflowsSpec: 1.0.0
+info:
+  title: Create a token to make recurring payments
+  version: v1
+  description: Store safely the card details of the shopper and offer subscription payments, automatic top-ups, and give the shoppers a faster checkout experience by using their stored card.
+sourceDescriptions:
+  - name: adyen-checkout-api
+    url: https://raw.githubusercontent.com/Adyen/adyen-openapi/main/yaml/CheckoutService-v71.yaml
+    type: openapi
+workflows:
+  - workflowId: tokenization
+    summary: Make a recurring payment
+    description: This workflow shows how save the shopper's payment details and perform a payment on their behalf
+    inputs:
+      type: object
+      properties:
+        x-api-key:
+          type: string
+        merchantAccount:
+          type: string
+        reference:
+          type: string
+        shopperReference:
+          type: string
+        amount:
+          $ref: '#/components/amount'
+        donationAmount:
+          $ref: '#/components/amount'
+        card:
+          $ref: '#/components/card'
+    steps:
+      - stepId: create-token
+        description: Make a card payment
+        operationId: post-payments
+        parameters:
+          - name: x-api-key
+            in: header
+            value: $inputs.x-api-key
+          - name: merchantAccount
+            in: body
+            target: $request.body#/merchantAccount
+            value: $inputs.merchantAccount
+          - name: amount
+            in: body
+            target: $request.body#/amount.value
+            value: 0
+          - name: currency
+            in: body
+            target: $request.body#/amount.currency
+            value: $inputs.amount.currency
+          - name: reference
+            in: body
+            target: $request.body#/reference
+            value: $inputs.reference
+          - name: paymentMethod
+            in: body
+            target: $request.body#/paymentMethod.type
+            value: scheme
+          - name: cardnumber
+            in: body
+            target: $request.body#/paymentMethod.number
+            value: $inputs.card.number
+          - name: CVC
+            in: body
+            target: $request.body#/paymentMethod.cvc
+            value: $inputs.card.cvc
+          - name: expiryMonth
+            in: body
+            target: $request.body#/paymentMethod.expiryMonth
+            value: $inputs.card.expiryMonth
+          - name: expiryYear
+            in: body
+            target: $request.body#/paymentMethod.expiryYear
+            value: $inputs.card.expiryYear
+          - name: holderName
+            in: body
+            target: $request.body#/paymentMethod.holderName
+            value: $inputs.card.holderName
+          - name: returnUrl
+            in: body
+            target: $request.body#/returnUrl
+            value: https://your-company.com/...
+          - name: recurringProcessingModel
+            in: body
+            target: $request.body#/recurringProcessingModel
+            value: Subscription
+          - name: storePaymentMethod
+            in: body
+            target: $request.body#/storePaymentMethod
+            value: true
+          - name: shopperReference
+            in: body
+            target: $request.body#/shopperReference
+            value: $inputs.shopperReference
+          - name: shopperInteraction
+            in: body
+            target: $request.body#/shopperInteraction
+            value: Ecommerce
+        successCriteria:
+          - condition: $statusCode == 200
+          # must obtain the token in the response  
+          - condition: $response.body.additionalData.recurring.recurringDetailReference != null
+          # shopperReference in response must match the input  
+          - condition: $response.body.additionalData.recurring.shopperReference == $inputs.shopperReference
+        outputs:
+          token: $response.body.additionalData.recurring.recurringDetailReference
+      - stepId: make-payment-with-token
+        description: Makes the payment using the token
+        operationId: post-payments
+        parameters:
+          - name: x-api-key
+            in: header
+            value: $inputs.x-api-key
+          - name: merchantAccount
+            in: body
+            target: $request.body#/merchantAccount
+            value: $inputs.merchantAccount
+          - name: amount
+            in: body
+            target: $request.body#/amount.value
+            value: $inputs.amount.value
+          - name: currency
+            in: body
+            target: $request.body#/amount.currency
+            value: $inputs.amount.currency
+          - name: reference
+            in: body
+            target: $request.body#/reference
+            value: $inputs.reference
+          - name: paymentMethod
+            in: body
+            target: $request.body#/paymentMethod.storedPaymentMethodId
+            value: $steps.create-token.outputs.token
+          - name: returnUrl
+            in: body
+            target: $request.body#/returnUrl
+            value: https://your-company.com/...
+          - name: recurringProcessingModel
+            in: body
+            target: $request.body#/recurringProcessingModel
+            value: Subscription
+          - name: storePaymentMethod
+            in: body
+            target: $request.body#/storePaymentMethod
+            value: true
+          - name: shopperReference
+            in: body
+            target: $request.body#/shopperReference
+            value: $inputs.shopperReference
+          - name: shopperInteraction
+            in: body
+            target: $request.body#/shopperInteraction
+            value: Ecommerce
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          pspReference: $response.body.pspReference
+    outputs:
+      pspReference: $steps.add-donation.outputs.pspReference
+components:
+  inputs:
+    amount:
+      type: object
+      properties:
+        value:
+          format: int64
+          type: integer
+          default: 2000
+        currency:
+          type: string
+          default: EUR
+    donation:
+      type: object
+      properties:
+        value:
+          format: int64
+          type: integer
+          default: 200
+        currency:
+          type: string
+          default: EUR
+    card:
+      type: object
+      properties:
+        number:
+          description: The card number (without any separators)
+          maxLength: 19
+          minLength: 4
+          type: string
+        cvc:
+          format: int64
+          type: integer
+          maxLength: 20
+          minLength: 1
+        expiryMonth:
+          maxLength: 2
+          minLength: 1
+          type: string
+        expiryYear:
+          maxLength: 4
+          minLength: 4
+          type: string
+        holderName:
+          maxLength: 50
+          minLength: 1
+          type: string
