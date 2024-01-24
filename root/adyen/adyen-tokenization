@@ -1,6 +1,6 @@
 workflowsSpec: 1.0.0
 info:
-  title: Create a token to make recurring payments
+  title: Make recurring payments with Adyen
   version: v1
   description: Store safely the card details of the shopper and offer subscription payments, automatic top-ups, and give the shoppers a faster checkout experience by using their stored card.
 sourceDescriptions:
@@ -9,8 +9,151 @@ sourceDescriptions:
     type: openapi
 workflows:
   - workflowId: tokenization
-    summary: Make a recurring payment
+    summary: Tokenize a card and make a payment
     description: This workflow shows how save the shopper's payment details and perform a payment on their behalf
+    inputs:
+      type: object
+      properties:
+        x-api-key:
+          type: string
+        merchantAccount:
+          type: string
+        reference:
+          type: string
+        shopperReference:
+          type: string
+        amount:
+          $ref: '#/components/amount'
+        card:
+          $ref: '#/components/card'
+    steps:
+      - stepId: create-token
+        description: Make a card payment
+        operationId: post-payments
+        parameters:
+          - name: x-api-key
+            in: header
+            value: $inputs.x-api-key
+          - name: merchantAccount
+            in: body
+            target: $request.body#/merchantAccount
+            value: $inputs.merchantAccount
+          - name: amount
+            in: body
+            target: $request.body#/amount.value
+            value: 0
+          - name: currency
+            in: body
+            target: $request.body#/amount.currency
+            value: $inputs.amount.currency
+          - name: reference
+            in: body
+            target: $request.body#/reference
+            value: $inputs.reference
+          - name: paymentMethod
+            in: body
+            target: $request.body#/paymentMethod.type
+            value: scheme
+          - name: cardnumber
+            in: body
+            target: $request.body#/paymentMethod.number
+            value: $inputs.card.number
+          - name: CVC
+            in: body
+            target: $request.body#/paymentMethod.cvc
+            value: $inputs.card.cvc
+          - name: expiryMonth
+            in: body
+            target: $request.body#/paymentMethod.expiryMonth
+            value: $inputs.card.expiryMonth
+          - name: expiryYear
+            in: body
+            target: $request.body#/paymentMethod.expiryYear
+            value: $inputs.card.expiryYear
+          - name: holderName
+            in: body
+            target: $request.body#/paymentMethod.holderName
+            value: $inputs.card.holderName
+          - name: returnUrl
+            in: body
+            target: $request.body#/returnUrl
+            value: https://your-company.com/...
+          - name: recurringProcessingModel
+            in: body
+            target: $request.body#/recurringProcessingModel
+            value: Subscription
+          - name: storePaymentMethod
+            in: body
+            target: $request.body#/storePaymentMethod
+            value: true
+          - name: shopperReference
+            in: body
+            target: $request.body#/shopperReference
+            value: $inputs.shopperReference
+          - name: shopperInteraction
+            in: body
+            target: $request.body#/shopperInteraction
+            value: Ecommerce
+        successCriteria:
+          - condition: $statusCode == 200
+          # must obtain the token in the response  
+          - condition: $response.body.additionalData.recurring.recurringDetailReference != null
+          # shopperReference in response must match the input  
+          - condition: $response.body.additionalData.recurring.shopperReference == $inputs.shopperReference
+        outputs:
+          token: $response.body.additionalData.recurring.recurringDetailReference
+      - stepId: make-payment-with-token
+        description: Makes the payment using the token
+        operationId: post-payments
+        parameters:
+          - name: x-api-key
+            in: header
+            value: $inputs.x-api-key
+          - name: merchantAccount
+            in: body
+            target: $request.body#/merchantAccount
+            value: $inputs.merchantAccount
+          - name: amount
+            in: body
+            target: $request.body#/amount.value
+            value: $inputs.amount.value
+          - name: currency
+            in: body
+            target: $request.body#/amount.currency
+            value: $inputs.amount.currency
+          - name: reference
+            in: body
+            target: $request.body#/reference
+            value: $inputs.reference
+          - name: type
+            in: body
+            target: $request.body#/paymentMethod.type
+            value: scheme
+          - name: storedPaymentMethodId
+            in: body
+            target: $request.body#/paymentMethod.storedPaymentMethodId
+            value: $steps.create-token.outputs.token
+          - name: recurringProcessingModel
+            in: body
+            target: $request.body#/recurringProcessingModel
+            value: Subscription
+          - name: shopperReference
+            in: body
+            target: $request.body#/shopperReference
+            value: $inputs.shopperReference
+          - name: shopperInteraction
+            in: body
+            target: $request.body#/shopperInteraction
+            value: ContAuth
+        successCriteria:
+          - condition: $statusCode == 200
+        outputs:
+          pspReference: $response.body.pspReference
+    outputs:
+      pspReference: $steps.make-payment-with-token.outputs.pspReference
+  - workflowId: networkTokens
+    summary: Create a network token and make a payment
+    description: This workflow shows create a network token and perform a payment on their behalf
     inputs:
       type: object
       properties:
