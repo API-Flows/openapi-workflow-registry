@@ -196,7 +196,11 @@ workflows:
           - name: paymentMethod
             in: body
             target: $request.body#/paymentMethod.type
-            value: scheme
+            value: networkToken
+          - name: brand
+            in: body
+            target: $request.body#/paymentMethod.brand
+            value: $inputs.brand
           - name: cardnumber
             in: body
             target: $request.body#/paymentMethod.number
@@ -331,3 +335,6 @@ components:
           maxLength: 50
           minLength: 1
           type: string
+        brand:
+          type: string
+          enum: [visa, mc, amex]
