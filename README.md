@@ -1,2 +1,2 @@
 # openapi-workflow-registry
-Collection of OpenAPI workflow files
+A container of OpenAPI workflow files
