@@ -19,10 +19,10 @@ workflows:
           description: API key to authenticate the request
         merchantAccount:
           type: string
-          description: your merchant account
+          description: The merchant account identifier, with which you want to process the transaction.
         reference:
           type: string
-          description: your unique reference
+          description: Your unique reference
         amount:
           $ref: '#/components/amount'
         donationAmount:
