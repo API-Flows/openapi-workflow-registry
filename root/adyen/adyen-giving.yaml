@@ -16,10 +16,13 @@ workflows:
       properties:
         x-api-key:
           type: string
+          summary: API key to authenticate the request
         merchantAccount:
           type: string
+          description: your merchant account
         reference:
           type: string
+          description: your unique reference
         amount:
           $ref: '#/components/amount'
         donationAmount:
