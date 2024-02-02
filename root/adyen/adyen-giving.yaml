@@ -16,7 +16,7 @@ workflows:
       properties:
         x-api-key:
           type: string
-          summary: API key to authenticate the request
+          description: API key to authenticate the request
         merchantAccount:
           type: string
           description: your merchant account
