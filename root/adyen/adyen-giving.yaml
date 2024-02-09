@@ -39,47 +39,47 @@ workflows:
             value: $inputs.x-api-key
           - name: merchantAccount
             in: body
-            target: $request.body#/merchantAccount
+            target: /merchantAccount
             value: $inputs.merchantAccount
           - name: amount
             in: body
-            target: $request.body#/amount.value
+            target: /amount.value
             value: $inputs.amount.value
           - name: currency
             in: body
-            target: $request.body#/amount.currency
+            target: /amount.currency
             value: $inputs.amount.currency
           - name: reference
             in: body
-            target: $request.body#/reference
+            target: /reference
             value: $inputs.reference
           - name: paymentMethod
             in: body
-            target: $request.body#/paymentMethod.type
+            target: /paymentMethod.type
             value: scheme
           - name: cardnumber
             in: body
-            target: $request.body#/paymentMethod.number
+            target: /paymentMethod.number
             value: $inputs.card.number
           - name: CVC
             in: body
-            target: $request.body#/paymentMethod.cvc
+            target: /paymentMethod.cvc
             value: $inputs.card.cvc
           - name: expiryMonth
             in: body
-            target: $request.body#/paymentMethod.expiryMonth
+            target: /paymentMethod.expiryMonth
             value: $inputs.card.expiryMonth
           - name: expiryYear
             in: body
-            target: $request.body#/paymentMethod.expiryYear
+            target: /paymentMethod.expiryYear
             value: $inputs.card.expiryYear
           - name: holderName
             in: body
-            target: $request.body#/paymentMethod.holderName
+            target: /paymentMethod.holderName
             value: $inputs.card.holderName
           - name: returnUrl
             in: body
-            target: $request.body#/returnUrl
+            target: /returnUrl
             value: https://your-company.com/...
         successCriteria:
           - condition: $statusCode == 200
@@ -96,43 +96,43 @@ workflows:
             value: $inputs.x-api-key
           - name: merchantAccount
             in: body
-            target: $request.body#/merchantAccount
+            target: /merchantAccount
             value: $inputs.merchantAccount
           - name: reference
             in: body
-            target: $request.body#/reference
+            target: /reference
             value: $inputs.reference
           - name: amount
             in: body
-            target: $request.body#/amount.value
+            target: /amount.value
             value: $inputs.donation.value
           - name: currency
             in: body
-            target: $request.body#/amount.currency
+            target: /amount.currency
             value: $inputs.donation.currency
           - name: donationToken
             in: body
-            target: $request.body#/donationToken
+            target: /donationToken
             value: $steps.make-payment.outputs.donationToken
           - name: donationOriginalPspReference
             in: body
-            target: $request.body#/donationOriginalPspReference
+            target: /donationOriginalPspReference
             value: $steps.make-payment.outputs.pspReference
           - name: merchantAccount
             in: body
-            target: $request.body#/merchantAccount
+            target: /merchantAccount
             value: $inputs.merchantAccount
           - name: donationAccount
             in: body
-            target: $request.body#/donationAccount
+            target: /donationAccount
             value: $inputs.donationAccount
           - name: paymentMethod
             in: body
-            target: $request.body#/paymentMethod.type
+            target: /paymentMethod.type
             value: scheme
           - name: returnUrl
             in: body
-            target: $request.body#/returnUrl
+            target: /returnUrl
             value: https://your-company.com/...
         successCriteria:
           - condition: $statusCode == 200
