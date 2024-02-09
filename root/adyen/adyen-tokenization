@@ -40,11 +40,11 @@ workflows:
             value: $inputs.merchantAccount
           - name: amount
             in: body
-            target: /amount.value
+            target: /amount/value
             value: 0
           - name: currency
             in: body
-            target: /amount.currency
+            target: /amount/currency
             value: $inputs.amount.currency
           - name: reference
             in: body
@@ -56,23 +56,23 @@ workflows:
             value: scheme
           - name: cardnumber
             in: body
-            target: /paymentMethod.number
+            target: /paymentMethod/number
             value: $inputs.card.number
           - name: CVC
             in: body
-            target: /paymentMethod.cvc
+            target: /paymentMethod/cvc
             value: $inputs.card.cvc
           - name: expiryMonth
             in: body
-            target: /paymentMethod.expiryMonth
+            target: /paymentMethod/expiryMonth
             value: $inputs.card.expiryMonth
           - name: expiryYear
             in: body
-            target: /paymentMethod.expiryYear
+            target: /paymentMethod/expiryYear
             value: $inputs.card.expiryYear
           - name: holderName
             in: body
-            target: /paymentMethod.holderName
+            target: /paymentMethod/holderName
             value: $inputs.card.holderName
           - name: returnUrl
             in: body
@@ -115,11 +115,11 @@ workflows:
             value: $inputs.merchantAccount
           - name: amount
             in: body
-            target: /amount.value
+            target: /amount/value
             value: $inputs.amount.value
           - name: currency
             in: body
-            target: /amount.currency
+            target: /amount/currency
             value: $inputs.amount.currency
           - name: reference
             in: body
@@ -127,11 +127,11 @@ workflows:
             value: $inputs.reference
           - name: type
             in: body
-            target: /paymentMethod.type
+            target: /paymentMethod/type
             value: scheme
           - name: storedPaymentMethodId
             in: body
-            target: /paymentMethod.storedPaymentMethodId
+            target: /paymentMethod/storedPaymentMethodId
             value: $steps.create-token.outputs.token
           - name: recurringProcessingModel
             in: body
