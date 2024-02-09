@@ -44,7 +44,7 @@ workflows:
             value: 0
           - name: currency
             in: body
-            target: $/amount.currency
+            target: /amount.currency
             value: $inputs.amount.currency
           - name: reference
             in: body
