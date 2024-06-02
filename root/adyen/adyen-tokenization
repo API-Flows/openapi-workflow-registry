@@ -1,4 +1,4 @@
-workflowsSpec: 1.0.0
+arazzo: 1.0.0
 info:
   title: Make recurring payments with Adyen
   version: v1
